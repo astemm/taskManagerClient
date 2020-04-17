@@ -1,0 +1,36 @@
+<div *ngIf="isLoggedIn; else loggedOut">
+  {{username}} logged in.
+</div>
+<ng-template #loggedOut>
+<div class="loginNavigation">
+  <form name="form" (ngSubmit)="f.form.valid && onSubmit()" #f="ngForm" novalidate>
+    <div>
+      <!--<label for="username">Username</label>-->
+      <input class="input" placeholder="Username" type="text"  name="username" [(ngModel)]="form.username" #username="ngModel"
+             required />
+      <div *ngIf="f.submitted && username.invalid">
+        <div *ngIf="username.errors.required" class="error">Username is required</div>
+      </div>
+    </div>
+    <div>
+      <!--<label for="password">Password</label>-->
+      <input class="input" placeholder="Password" type="password"  name="password" [(ngModel)]="form.password" #password="ngModel"
+             required minlength="1" />
+      <div *ngIf="f.submitted && password.invalid">
+        <div class="error" *ngIf="password.errors.required" >Password is required</div>
+        <div class="error" *ngIf="password.errors.minlength" >Password must be at least 1 character</div>
+      </div>
+    </div>
+    <div>
+      <button class="btn btn-success">Login</button>
+      <div class="error" *ngIf="f.submitted && isLoginFailed" >
+        {{errorMessage}}
+      </div>
+    </div>
+  </form>
+  <hr />
+  <p>If you do not have an account?</p>
+  <a class="btn btn-link" href="register" >Sign Up</a>
+</div>
+</ng-template>
+

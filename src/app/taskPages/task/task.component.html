@@ -1,0 +1,49 @@
+<h3>Number of tasks: {{num}}</h3>
+<table class="table-bordered">
+  <caption>List of Tasks</caption> 
+  <tr>
+    <th>ID</th>
+    <th>Title</th>
+    <th>Description</th>
+    <th>DueDate</th>
+    <th>Own/Shared Task</th>
+    <th>Operations</th>
+    <th>Enter email of user</th>
+    <th>Share the Task</th>
+  </tr>
+  <tr *ngFor="let task of tasksList | async">
+    <td>{{task.taskId}}</td>
+    <td>{{task.title}}</td>
+    <td>{{task.description}}</td>
+    <td>{{task.endTask}}</td>
+    <td>{{task.username}}</td>
+    <td><button class="tbl-btn btn-primary" (click)="editTask(task.taskId)">Edit</button>
+    <button class="tbl-btn btn-primary" (click)="deleteTask(task.taskId)">Delete</button></td>
+    <td><input type="text" class="form-control" id="email" required [(ngModel)]="sharedEmail" name="email">
+    </td>
+    <td><button class="tbl-btn btn-primary" (click)="shareTask(task.taskId)">Share</button>
+  </tr>
+</table>
+<td><button class="tbl-btn btn-primary" (click)="createTask()">CreateTask</button>
+  <div *ngIf="isCreated" [hidden]="submitted" style="width: 300px;">
+    <form (ngSubmit)="onSubmit()">
+      <div class="form-group">
+        <label for="title"> Title</label>
+        <input type="text" class="form-control" id="title" required [(ngModel)]="newTask.title" name="title">
+      </div>
+      <div class="form-group">
+        <label for="description">Description</label>
+        <input type="text" class="form-control" id="description" required [(ngModel)]="newTask.description" name="description">
+      </div>
+      <div class="form-group">
+        <label for="dueDate">DueDate [yyyy-mm-dd]</label>
+        <input type="text" class="form-control" id="dueDate" required [(ngModel)]="newTask.endDate" name="dueDate">
+      </div>
+      <button type="submit" class="btn btn-success">Submit</button>
+    </form>
+  </div>
+   
+  <div [hidden]="!submitted">
+    <h4>You submitted successfully!</h4>
+    <button class="btn btn-success" (click)="newCustomer()">Add</button>
+  </div>
