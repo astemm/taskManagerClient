@@ -53,7 +53,9 @@ export class TaskComponent implements OnInit {
   addTask() {
     this.newTask.user=this.user;
     this.taskService.createTask(this.newTask).subscribe(
-      data=>{this.createMessage="Task added"; this.isCreated=false;},
+      data=>{this.createMessage="Task added"; this.isCreated=false;
+  this.reloadData();
+    },
        error=>this.createMessage=error
     )
     
@@ -62,10 +64,11 @@ export class TaskComponent implements OnInit {
   deleteTask(id: string) {
     this.taskService.deleteTask(id) //this.user.id
       .subscribe(
-        data => {
+        data => {this.createMessage="Task deleted";
+         this.reloadData();
           console.log(data);
         },
-        error => console.log(error));
+        error => this.createMessage=error)
   }
 
   editTask(id: string) {
@@ -76,7 +79,8 @@ export class TaskComponent implements OnInit {
 
   updateTask() {
      this.taskService.updateTask(this.editedTask).subscribe(
-     data=>this.createMessage="Task updated",error=>this.createMessage=error
+     data=>{this.createMessage="Task updated";
+     this.isEdited=false; this.reloadData();},error=>this.createMessage=error
      )
   }
 
@@ -87,10 +91,16 @@ export class TaskComponent implements OnInit {
 
   shareTask() {
     var receivingUser:User;
-    this.taskService.getUserByEmail(this.sharedEmail).subscribe(user=>{receivingUser=user;});
+    this.taskService.getUserByEmail(this.sharedEmail).subscribe(user=>{receivingUser=user;
+      this.newSharedTask=new SharedTask(this.user.id,receivingUser.id,this.taskToShare);
+      this.taskService.createSharedTask(this.newSharedTask).subscribe(
+        data=>this.createMessage="Task was shared", error=>this.createMessage="Error in sharig task"
+      )
+    },
+      error=>this.createMessage="Enter correct email");
     //if ((sharedTask!=null) && (receivingUser!=null)
-    this.newSharedTask=new SharedTask(this.user.id,receivingUser.id,this.taskToShare);
   }
+
 
 
 }

@@ -1,3 +1,4 @@
+<h3> Account:  {{user.username}} Name: {{user.name}} </h3>
 <h3>Number of tasks: {{num}}</h3>
 <table class="table-bordered">
   <caption>List of Tasks</caption> 
@@ -14,20 +15,22 @@
     <td>{{task.taskId}}</td>
     <td>{{task.title}}</td>
     <td>{{task.description}}</td>
-    <td>{{task.endTask}}</td>
+    <td>{{task.endTask | date:'yyyy-MM-dd'}}</td>
     <td>{{task.username}}</td>
     <td><button class="tbl-btn btn-primary" (click)="editTask(task.taskId)">Edit</button>
     <button class="tbl-btn btn-primary" (click)="deleteTask(task.taskId)">Delete</button></td>
     <td><button class="tbl-btn btn-primary" (click)="share(task.taskId)">Share</button>
   </tr>
 </table>
+<button class="tbl-btn btn-primary" (click)="createTask()">CreateTask</button>
+<br>
+<span>{{createMessage}}</span>
 <div *ngIf="isShared" style="width: 300px;">
 <span>Enter the user email to share the task - {{taskToShare.title}} - {{taskToShare.description}}</span>
+<br>
 <input type="text" class="form-control" id="email" required [(ngModel)]="sharedEmail" name="email">
 <button class="tbl-btn btn-primary" (click)="shareTask()">Share</button>
 </div>
-<button class="tbl-btn btn-primary" (click)="createTask()">CreateTask</button>
-<span>{{createMessage}}</span>
   <div *ngIf="isCreated" [hidden]="submitted" style="width: 300px;">
     <form (ngSubmit)="addTask()">
       <div class="form-group">
@@ -44,11 +47,6 @@
       </div>
       <button type="submit" class="btn btn-success">Add Task</button>
     </form>
-  </div>
-   
-  <div [hidden]="!submitted">
-    <h4>You submitted successfully!</h4>
-    <button class="btn btn-success" (click)="newCustomer()">Add</button>
   </div>
 
   <div *ngIf="isEdited" [hidden]="submitted" style="width: 300px;">
