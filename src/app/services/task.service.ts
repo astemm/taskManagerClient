@@ -10,7 +10,7 @@ import { User} from '../models/user.model';
   providedIn: 'root'
 })
 export class TaskService {
-  private userUrl = 'http://localhost:8080/auth';
+  private userUrl = 'http://localhost:8080/auth/users';
   private taskUrl = 'http://localhost:8080/api/tasks';
   private sharedUrl = 'http://localhost:8080/shared/tasks';
   constructor(private http: HttpClient) { }
@@ -20,11 +20,11 @@ export class TaskService {
   }
 
   getUserByEmail(email: string): Observable<User> {
-    return this.http.get<User>(`${this.userUrl}/user/email/${email}`);
+    return this.http.get<User>(`${this.userUrl}/email/${email}`);
   }
 
-  getTaskList(): Observable<TaskInfo[]> {
-    return this.http.get<TaskInfo []>(`${this.taskUrl}`);
+  getTaskList(id:string): Observable<TaskInfo[]> {
+    return this.http.get<TaskInfo []>(`${this.taskUrl}/user/${id}`);
   }
 
   getTask(id: string): Observable<Task> {
@@ -36,7 +36,7 @@ export class TaskService {
   }
 
   createSharedTask(task: SharedTask): Observable<SharedTask> {
-    return this.http.post<SharedTask>(`${this.sharedUrl}`, task);
+    return this.http.post<SharedTask>(`${this.taskUrl}/shared`, task);
   }
  
   updateTask(task: Object): Observable<Object> {

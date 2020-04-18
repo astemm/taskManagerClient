@@ -8,7 +8,6 @@
     <th>DueDate</th>
     <th>Own/Shared Task</th>
     <th>Operations</th>
-    <th>Enter email of user</th>
     <th>Share the Task</th>
   </tr>
   <tr *ngFor="let task of tasksList | async">
@@ -19,14 +18,18 @@
     <td>{{task.username}}</td>
     <td><button class="tbl-btn btn-primary" (click)="editTask(task.taskId)">Edit</button>
     <button class="tbl-btn btn-primary" (click)="deleteTask(task.taskId)">Delete</button></td>
-    <td><input type="text" class="form-control" id="email" required [(ngModel)]="sharedEmail" name="email">
-    </td>
-    <td><button class="tbl-btn btn-primary" (click)="shareTask(task.taskId)">Share</button>
+    <td><button class="tbl-btn btn-primary" (click)="share(task.taskId)">Share</button>
   </tr>
 </table>
-<td><button class="tbl-btn btn-primary" (click)="createTask()">CreateTask</button>
+<div *ngIf="isShared" style="width: 300px;">
+<span>Enter the user email to share the task - {{taskToShare.title}} - {{taskToShare.description}}</span>
+<input type="text" class="form-control" id="email" required [(ngModel)]="sharedEmail" name="email">
+<button class="tbl-btn btn-primary" (click)="shareTask()">Share</button>
+</div>
+<button class="tbl-btn btn-primary" (click)="createTask()">CreateTask</button>
+<span>{{createMessage}}</span>
   <div *ngIf="isCreated" [hidden]="submitted" style="width: 300px;">
-    <form (ngSubmit)="onSubmit()">
+    <form (ngSubmit)="addTask()">
       <div class="form-group">
         <label for="title"> Title</label>
         <input type="text" class="form-control" id="title" required [(ngModel)]="newTask.title" name="title">
@@ -39,7 +42,7 @@
         <label for="dueDate">DueDate [yyyy-mm-dd]</label>
         <input type="text" class="form-control" id="dueDate" required [(ngModel)]="newTask.endDate" name="dueDate">
       </div>
-      <button type="submit" class="btn btn-success">Submit</button>
+      <button type="submit" class="btn btn-success">Add Task</button>
     </form>
   </div>
    
@@ -47,3 +50,28 @@
     <h4>You submitted successfully!</h4>
     <button class="btn btn-success" (click)="newCustomer()">Add</button>
   </div>
+
+  <div *ngIf="isEdited" [hidden]="submitted" style="width: 300px;">
+    <form (ngSubmit)="updateTask()">
+      <div class="form-group">
+        <label for="title"> Title</label>
+        <input type="text" class="form-control" id="title" required [(ngModel)]="editedTask.title" name="title">
+      </div>
+      <div class="form-group">
+        <label for="description">Description</label>
+        <input type="text" class="form-control" id="description" required [(ngModel)]="editedTask.description" name="description">
+      </div>
+      <div class="form-group">
+        <label for="dueDate">DueDate [yyyy-mm-dd]</label>
+        <input type="text" class="form-control" id="dueDate" required [(ngModel)]="editedTask.endDate" name="dueDate">
+      </div>
+      <button type="submit" class="btn btn-success">Update</button>
+    </form>
+  </div>
+  
+  
+  
+
+
+
+  

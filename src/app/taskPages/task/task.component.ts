@@ -6,6 +6,7 @@ import { Task} from '../../models/task.model';
 import { SharedTask} from '../../models/shared-task.model';
 import { Router } from '@angular/router';
 import { User } from 'src/app/models/user.model';
+import { TokenStorageService } from 'src/app/services/token-storage.service';
 
 @Component({
   selector: 'app-task',
@@ -14,32 +15,48 @@ import { User } from 'src/app/models/user.model';
 })
 export class TaskComponent implements OnInit {
   num:number;
-  user: Observable<User>;
-  sharedUser: Observable<User>;
+  user: User;
+  //sharedUser: Observable<User>;
   tasksList: Observable<TaskInfo[]>;
   newTask: Task;
-  editedTask:Observable<Task>;
+  editedTask:Task;
   isCreated:boolean=false;
   isEdited:boolean=false;
+  isShared:boolean=false;
+  taskToShare:Task;
   newSharedTask: SharedTask;
   sharedEmail:string;
+  createMessage:string;
 
-  constructor(private taskService: TaskService, private router
-    : Router) {
+  constructor(private taskService: TaskService,
+    private tokenStorageService: TokenStorageService, private router: Router) {
     }
 
   ngOnInit() {
-    this.reloadData();
+    this.taskService.getUserByName(this.tokenStorageService.getUsername()).subscribe(user=>{this.user=user;
+      this.reloadData();}
+      );
+    
   }
 
   reloadData() {
-   this.tasksList=this.taskService.getTaskList();
-   this.tasksList.subscribe(result=>{this.num=result.length;})
+   // if(this.user!=null) {
+   this.tasksList=this.taskService.getTaskList(this.user.id);
+  this.tasksList.subscribe(result=>{this.num=result.length;}) //}
   }
 
   createTask() {
     this.newTask=new Task();
     this.isCreated=true;
+  }
+
+  addTask() {
+    this.newTask.user=this.user;
+    this.taskService.createTask(this.newTask).subscribe(
+      data=>{this.createMessage="Task added"; this.isCreated=false;},
+       error=>this.createMessage=error
+    )
+    
   }
 
   deleteTask(id: string) {
@@ -54,6 +71,26 @@ export class TaskComponent implements OnInit {
   editTask(id: string) {
     //this.router.navigate(['/update']);
     this.isEdited=true;
-    this.editedTask=this.taskService.getTask(id);
+    this.taskService.getTask(id).subscribe(task=>{this.editedTask=task;});
   }
+
+  updateTask() {
+     this.taskService.updateTask(this.editedTask).subscribe(
+     data=>this.createMessage="Task updated",error=>this.createMessage=error
+     )
+  }
+
+  share(id:string) {
+    this.isShared=true;
+    this.taskService.getTask(id).subscribe(task=>{this.taskToShare=task;}) 
+  }
+
+  shareTask() {
+    var receivingUser:User;
+    this.taskService.getUserByEmail(this.sharedEmail).subscribe(user=>{receivingUser=user;});
+    //if ((sharedTask!=null) && (receivingUser!=null)
+    this.newSharedTask=new SharedTask(this.user.id,receivingUser.id,this.taskToShare);
+  }
+
+
 }

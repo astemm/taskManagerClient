@@ -9,7 +9,7 @@ import { TokenStorageService } from './services/token-storage.service';
 export class AppComponent {
   title = 'Angular Client';
   description = 'Tasks Manager App';
-  private roles: string[];
+  //private roles: string[];
   //private authority: string;
   private isLogged: boolean=false;
 
@@ -17,7 +17,7 @@ export class AppComponent {
   
   ngOnInit() {
     if (this.tokenStorage.getToken()) {
-      this.isLogged;
+      this.isLogged=true;
       /*
       this.roles = this.tokenStorage.getAuthorities();
       this.roles.every(role => {
