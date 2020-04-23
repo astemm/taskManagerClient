@@ -5,8 +5,4 @@ export class Task {
     description: string;
     endDate: Date;
     user: User;
-    //constructor(id: number, role:string) {
-    //    this.id = id;
-    //    this.role = role 
-    // }
 }

@@ -9,27 +9,29 @@
     <th>DueDate</th>
     <th>Own/Shared Task</th>
     <th>Operations</th>
-    <th>Share the Task</th>
+    <th>Share</th>
   </tr>
   <tr *ngFor="let task of tasksList | async">
-    <td>{{task.taskId}}</td>
+    <td>{{task.taskId.substring(17)}}</td>
     <td>{{task.title}}</td>
     <td>{{task.description}}</td>
-    <td>{{task.endTask | date:'yyyy-MM-dd'}}</td>
+    <td>{{task.endDate}}</td>
     <td>{{task.username}}</td>
-    <td><button class="tbl-btn btn-primary" (click)="editTask(task.taskId)">Edit</button>
-    <button class="tbl-btn btn-primary" (click)="deleteTask(task.taskId)">Delete</button></td>
-    <td><button class="tbl-btn btn-primary" (click)="share(task.taskId)">Share</button>
+    <td><button class="tbl-btn btn-warning" (click)="editTask(task.taskId)">Edit</button>
+    <button class="tbl-btn btn-danger" (click)="deleteTask(task.taskId)">Delete</button></td>
+    <td><button class="tbl-btn btn-default" (click)="share(task.taskId)">Share</button>
   </tr>
 </table>
 <button class="tbl-btn btn-primary" (click)="createTask()">CreateTask</button>
 <br>
 <span>{{createMessage}}</span>
+<br>
+<span>{{sse}}</span>
 <div *ngIf="isShared" style="width: 300px;">
 <span>Enter the user email to share the task - {{taskToShare.title}} - {{taskToShare.description}}</span>
 <br>
 <input type="text" class="form-control" id="email" required [(ngModel)]="sharedEmail" name="email">
-<button class="tbl-btn btn-primary" (click)="shareTask()">Share</button>
+<button class="tbl-btn btn-success" (click)="shareTask()">Share</button>
 </div>
   <div *ngIf="isCreated" [hidden]="submitted" style="width: 300px;">
     <form (ngSubmit)="addTask()">
@@ -42,7 +44,7 @@
         <input type="text" class="form-control" id="description" required [(ngModel)]="newTask.description" name="description">
       </div>
       <div class="form-group">
-        <label for="dueDate">DueDate [yyyy-mm-dd]</label>
+        <label for="dueDate">DueDate [dd-mm-yyyy]</label>
         <input type="text" class="form-control" id="dueDate" required [(ngModel)]="newTask.endDate" name="dueDate">
       </div>
       <button type="submit" class="btn btn-success">Add Task</button>
@@ -60,10 +62,10 @@
         <input type="text" class="form-control" id="description" required [(ngModel)]="editedTask.description" name="description">
       </div>
       <div class="form-group">
-        <label for="dueDate">DueDate [yyyy-mm-dd]</label>
+        <label for="dueDate">DueDate [dd-mm-yyyy]</label>
         <input type="text" class="form-control" id="dueDate" required [(ngModel)]="editedTask.endDate" name="dueDate">
       </div>
-      <button type="submit" class="btn btn-success">Update</button>
+      <button type="submit" class="btn btn-warning">Update</button>
     </form>
   </div>
   

@@ -1,10 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { Observable } from 'rxjs';
+import { SseService } from '../../services/sse.service';
 import { TaskService } from '../../services/task.service';
 import { TaskInfo} from '../../models/task-info';
 import { Task} from '../../models/task.model';
 import { SharedTask} from '../../models/shared-task.model';
-import { Router } from '@angular/router';
 import { User } from 'src/app/models/user.model';
 import { TokenStorageService } from 'src/app/services/token-storage.service';
 
@@ -16,7 +16,7 @@ import { TokenStorageService } from 'src/app/services/token-storage.service';
 export class TaskComponent implements OnInit {
   num:number;
   user: User;
-  //sharedUser: Observable<User>;
+  sse:string="idd";
   tasksList: Observable<TaskInfo[]>;
   newTask: Task;
   editedTask:Task;
@@ -27,20 +27,33 @@ export class TaskComponent implements OnInit {
   newSharedTask: SharedTask;
   sharedEmail:string;
   createMessage:string;
+  source:EventSource;
 
-  constructor(private taskService: TaskService,
-    private tokenStorageService: TokenStorageService, private router: Router) {
+  constructor(private taskService: TaskService, private sseService:SseService,
+    private tokenStorageService: TokenStorageService) {
     }
 
   ngOnInit() {
+    this.sseService
+      .getServerSentEvent("http://localhost:8080/events/sse")
+    .subscribe(data => { this.sse=data.data; console.log("xyzz "+data.data+" "+data.origin)},
+      error => this.sse=error);
     this.taskService.getUserByName(this.tokenStorageService.getUsername()).subscribe(user=>{this.user=user;
       this.reloadData();}
       );
-    
+     this.source = new EventSource('http://localhost:8080/events/sse');
+    // this.source.onopen=function(e) {this.createMessage=e.data;}
+    //this.source.onmessage = function(e) {console.log("mm"+e.data);}
+    //  this.source.onerror=function(e) {this.createMessage="error";}
+      
+  }
+
+  callback(e) {
+    this.createMessage=e.data; console.log(e.data); 
+    console.log(this.isCreated); 
   }
 
   reloadData() {
-   // if(this.user!=null) {
    this.tasksList=this.taskService.getTaskList(this.user.id);
   this.tasksList.subscribe(result=>{this.num=result.length;}) //}
   }
@@ -72,7 +85,6 @@ export class TaskComponent implements OnInit {
   }
 
   editTask(id: string) {
-    //this.router.navigate(['/update']);
     this.isEdited=true;
     this.taskService.getTask(id).subscribe(task=>{this.editedTask=task;});
   }
@@ -94,13 +106,10 @@ export class TaskComponent implements OnInit {
     this.taskService.getUserByEmail(this.sharedEmail).subscribe(user=>{receivingUser=user;
       this.newSharedTask=new SharedTask(this.user.id,receivingUser.id,this.taskToShare);
       this.taskService.createSharedTask(this.newSharedTask).subscribe(
-        data=>this.createMessage="Task was shared", error=>this.createMessage="Error in sharig task"
-      )
+        data=>{this.createMessage="Task was shared"}, 
+        error=>this.createMessage="Error in sharig task"
+      ); this.isShared=false;
     },
       error=>this.createMessage="Enter correct email");
-    //if ((sharedTask!=null) && (receivingUser!=null)
   }
-
-
-
 }
