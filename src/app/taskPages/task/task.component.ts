@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, NgZone } from '@angular/core';
 import { Observable } from 'rxjs';
 import { SseService } from '../../services/sse.service';
 import { TaskService } from '../../services/task.service';
@@ -16,7 +16,7 @@ import { TokenStorageService } from 'src/app/services/token-storage.service';
 export class TaskComponent implements OnInit {
   num:number;
   user: User;
-  sse:string="idd";
+  sse:string="";
   tasksList: Observable<TaskInfo[]>;
   newTask: Task;
   editedTask:Task;
@@ -30,27 +30,32 @@ export class TaskComponent implements OnInit {
   source:EventSource;
 
   constructor(private taskService: TaskService, private sseService:SseService,
-    private tokenStorageService: TokenStorageService) {
+    private tokenStorageService: TokenStorageService, private zone:NgZone) {
     }
 
   ngOnInit() {
-    this.sseService
-      .getServerSentEvent("http://localhost:8080/events/sse")
-    .subscribe(data => { this.sse=data.data; console.log("xyzz "+data.data+" "+data.origin)},
-      error => this.sse=error);
+   // this.sseService
+   //   .getServerSentEvent("http://localhost:8080/events/sse")
+   // .subscribe(data => { this.sse=data;},
+   //   error => this.createMessage=error);
     this.taskService.getUserByName(this.tokenStorageService.getUsername()).subscribe(user=>{this.user=user;
       this.reloadData();}
       );
-     this.source = new EventSource('http://localhost:8080/events/sse');
-    // this.source.onopen=function(e) {this.createMessage=e.data;}
-    //this.source.onmessage = function(e) {console.log("mm"+e.data);}
-    //  this.source.onerror=function(e) {this.createMessage="error";}
+    this.source = new EventSource('http://localhost:8080/events/sse');
+    this.source.onmessage= event => {
+      this.zone.run(() => {
+      //  this.sse=event.data;
+        if(event.data==this.user.id) this.reloadData();
+        console.log(event);
+      });
+    };
+    this.source.onerror = error => {
+      this.zone.run(() => {
+      //  this.createMessage=error.type;
+        console.log(error);
+      });
+    };
       
-  }
-
-  callback(e) {
-    this.createMessage=e.data; console.log(e.data); 
-    console.log(this.isCreated); 
   }
 
   reloadData() {
@@ -75,7 +80,7 @@ export class TaskComponent implements OnInit {
   }
 
   deleteTask(id: string) {
-    this.taskService.deleteTask(id) //this.user.id
+    this.taskService.deleteTask(id)
       .subscribe(
         data => {this.createMessage="Task deleted";
          this.reloadData();

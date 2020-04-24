@@ -11,15 +11,17 @@ export class SseService {
       const eventSource = this.getEventSource(url);
       eventSource.onmessage = event => {
         this._zone.run(() => {
-          observer.next(event);
+          observer.next(event.data);
           console.log(event);
         });
       };
       eventSource.onerror = error => {
         this._zone.run(() => {
           observer.error(error);
+          console.log(error);
         });
       };
+    //  return () => eventSource.close();
     });
   }
   private getEventSource(url: string): EventSource {
