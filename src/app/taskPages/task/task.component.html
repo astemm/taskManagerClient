@@ -12,7 +12,7 @@
     <th>Share</th>
   </tr>
   <tr *ngFor="let task of tasksList | async">
-    <td>{{task.taskId.substring(17)}}</td>
+    <td>..{{task.taskId.substring(17)}}</td>
     <td>{{task.title}}</td>
     <td>{{task.description}}</td>
     <td>{{task.endDate}}</td>

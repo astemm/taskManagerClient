@@ -14,9 +14,7 @@ export class LoginComponent implements OnInit {
   form: any = {};
   isLoggedIn = false;
   isLoginFailed = false;
-  errorMessage = 'Check username/password';
-  errorMessage1 = 'net::ERR_CONNECTION_REFUSED';
-  //roles: string[] = [];
+  errorMessage;
   username:string;
   private loginInfo: LoginInfo;
 
@@ -24,14 +22,13 @@ export class LoginComponent implements OnInit {
   ngOnInit() {
     if (this.tokenStorage.getToken()) {
       this.isLoggedIn = true;
-      //this.roles = this.tokenStorage.getAuthorities();
       this.username = this.tokenStorage.getUsername();
     }
   }
 
   onSubmit() {   //onSubmit(myForm: NgForm)
     console.log(this.form);
- 
+      this.errorMessage="";
       this.loginInfo = new LoginInfo(
       this.form.username,
       this.form.password);
@@ -40,16 +37,14 @@ export class LoginComponent implements OnInit {
       data => {
         this.tokenStorage.saveToken(data.accessToken);
         this.tokenStorage.saveUsername(data.username);
-        //this.tokenStorage.saveAuthorities(data.authorities);
  
         this.isLoginFailed = false;
         this.isLoggedIn = true;
-        //this.roles = this.tokenStorage.getAuthorities();
         this.reloadPage();
       },
       error => {
         console.log(error);
-        this.errorMessage = error.error.text;
+        this.errorMessage ='Check username/password';
         this.isLoginFailed = true;
       }
     );

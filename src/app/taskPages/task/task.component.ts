@@ -69,6 +69,7 @@ export class TaskComponent implements OnInit {
   }
 
   addTask() {
+    this.createMessage="";
     this.newTask.user=this.user;
     this.taskService.createTask(this.newTask).subscribe(
       data=>{this.createMessage="Task added"; this.isCreated=false;
@@ -95,6 +96,7 @@ export class TaskComponent implements OnInit {
   }
 
   updateTask() {
+     this.createMessage="";
      this.taskService.updateTask(this.editedTask).subscribe(
      data=>{this.createMessage="Task updated";
      this.isEdited=false; this.reloadData();},error=>this.createMessage=error
